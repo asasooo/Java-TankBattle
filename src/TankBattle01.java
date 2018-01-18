@@ -42,6 +42,12 @@ class FrameLaunch {
 	}
 
 	class JPanelLaunch extends JPanel implements Runnable {
+		Image boom1 = Toolkit.getDefaultToolkit().getImage("image/bomb_1.PNG");
+		Image boom2 = Toolkit.getDefaultToolkit().getImage("image/bomb_2.PNG");
+		Image boom3 = Toolkit.getDefaultToolkit().getImage("image/bomb_3.PNG");
+		Image boom4 = Toolkit.getDefaultToolkit().getImage("image/bomb_4.PNG");
+		Image boom5 = Toolkit.getDefaultToolkit().getImage("image/bomb_5.PNG");
+		ArrayList picList = new ArrayList();
 
 		boolean startFlag = false;
 		boolean keyStart = false;
@@ -53,13 +59,17 @@ class FrameLaunch {
 
 		boolean moveFlag = true;
 
-		// ∂®“Â ˝◊È µ–»À ◊”µØ.
+		// ÂÆö‰πâÊï∞ÁªÑ Êïå‰∫∫ Â≠êÂºπ.
 		CopyOnWriteArrayList<enemyTank> enemy = new CopyOnWriteArrayList();
 		CopyOnWriteArrayList myShot = new CopyOnWriteArrayList();
 		CopyOnWriteArrayList enemyShot = new CopyOnWriteArrayList();
 
 		JPanelLaunch() {
-
+			picList.add(boom1);
+			picList.add(boom2);
+			picList.add(boom3);
+			picList.add(boom4);
+			picList.add(boom5);
 			setBounds(0, 0, 700, 700);
 			setVisible(true);
 			setBackground(new Color(105, 105, 105));
@@ -105,7 +115,7 @@ class FrameLaunch {
 				}
 				repaint();
 			}
-			// µ˜Õ∑ œÚ…œ.
+			// Ë∞ÉÂ§¥ Âêë‰∏ä.
 			my_tank.setDir(0);
 			repaint();
 			startFlag = true;
@@ -149,20 +159,22 @@ class FrameLaunch {
 				}
 			}
 
-			// paintµ–»À.
+			// paintÊïå‰∫∫.Âπ∂ÈöèÊú∫ÁßªÂä®.
 			Iterator<enemyTank> i = enemy.iterator();
-
 			while (i.hasNext()) {
 				// for(int enemyNum = 0 ;enemyNum<enemy.size();enemyNum++) {
 				enemyTank et = i.next();
 				// enemyTank et = enemy.get(enemyNum);
 				if (et.isAlive) {
-
 					int nowDir = et.getDir();
 					boolean hitWall = false;
+					et.setIsTouch(et.getX(), et.getY(), nowDir);
 					switch (nowDir) {
 					case 0:
 						if (et.getY() <= 10) {
+							hitWall = true;
+							break;
+						} else if (et.setIsTouch(et.getX(), et.getY(), nowDir)) {
 							hitWall = true;
 							break;
 						} else {
@@ -173,6 +185,9 @@ class FrameLaunch {
 						if (et.getX() >= 630) {
 							hitWall = true;
 							break;
+						} else if (et.setIsTouch(et.getX(), et.getY(), nowDir)) {
+							hitWall = true;
+							break;
 						} else {
 							et.setX(et.getX() + 5);
 						}
@@ -181,12 +196,18 @@ class FrameLaunch {
 						if (et.getY() >= 600) {
 							hitWall = true;
 							break;
+						} else if (et.setIsTouch(et.getX(), et.getY(), nowDir)) {
+							hitWall = true;
+							break;
 						} else {
 							et.setY(et.getY() + 5);
 						}
 						break;
 					case 3:
 						if (et.getX() <= 10) {
+							hitWall = true;
+							break;
+						} else if (et.setIsTouch(et.getX(), et.getY(), nowDir)) {
 							hitWall = true;
 							break;
 						} else {
@@ -206,18 +227,11 @@ class FrameLaunch {
 					}
 				}
 			}
-			// for(int enemyNum = 0;enemyNum<enemy.size();enemyNum++) {
-			// enemyTank et = enemy.get(enemyNum);
-			//
-			// }
 
 			try {
 				Iterator<cannonball> ies = enemyShot.iterator();
-				//// ArrayList deletList = new ArrayList();
 				while (ies.hasNext()) {
 					cannonball cb = ies.next();
-					// for(int num = 0 ; num<enemyShot.size() ; num++) {
-					// cannonball cb = (cannonball)enemyShot.get(num);
 					int thisDir = cb.getDir();
 					switch (thisDir) {
 					case 0:
@@ -250,10 +264,9 @@ class FrameLaunch {
 						break;
 					}
 
-					/* ’‚∏ˆ∂‡œﬂ≥Ãremoveª·±®¥Ì ∫‹ƒ— ‹ ∏…¥‡≤ª…æ¡À ƒ⁄¥Ê’ºµ„æÕ’ºµ„∞… = =£¨ */
+					/* Ëøô‰∏™Â§öÁ∫øÁ®ãremove‰ºöÊä•Èîô ÂæàÈöæÂèó Âπ≤ËÑÜ‰∏çÂà†‰∫Ü ÂÜÖÂ≠òÂç†ÁÇπÂ∞±Âç†ÁÇπÂêß = =Ôºå */
 					// enemyShot.removeAll(deletList);
-					boolean boomFlag = false;
-					// ºÏ≤‚◊‘º∫µƒtank «∑Ò±ªª˜÷–.
+					// Ê£ÄÊµãËá™Â∑±ÁöÑtankÊòØÂê¶Ë¢´Âáª‰∏≠.
 					switch (thisDir) {
 					case 0:
 					case 2:
@@ -261,8 +274,6 @@ class FrameLaunch {
 								&& cb.getY() < my_tank.getY() + 60) {
 							myTankAlive = false;
 							cb.setAliveFlag();
-							boomFlag = true;
-							//
 						}
 						break;
 					case 1:
@@ -273,9 +284,7 @@ class FrameLaunch {
 							cb.setAliveFlag();
 						}
 					}
-					if (boomFlag) {
 
-					}
 					if (cb.enemyShotAliveFlag) {
 						drawBall(cb.getX(), cb.getY(), g);
 					}
@@ -284,7 +293,7 @@ class FrameLaunch {
 				System.out.println("ConcurrentModificationException");
 			}
 
-			// ø…“‘º”‘ÿ≈⁄µØ.
+			// ÂèØ‰ª•Âä†ËΩΩÁÇÆÂºπ.
 			// for(int myShotNum = 0 ;myShotNum<myShot.size();myShotNum++){
 			// myCannonball cm = (myCannonball)myShot.get(myShotNum);
 			Iterator icm = myShot.iterator();
@@ -334,7 +343,17 @@ class FrameLaunch {
 							if (cm.getX() > et.getX() && cm.getX() < et.getX() + 45 && cm.getY() > et.getY()
 									&& cm.getY() < et.getY() + 65) {
 								et.isAlive = false;
+								for (int num = 0; num < picList.size(); num++) {
+									Image pic = (Image) picList.get(num);
+									System.out.println(cm.getX());
+									g.drawImage(pic, et.getX() + 8, et.getY(), 40, 40, this);
+								}
 								cm.setAliveFlag();
+								// Iterator<Image> iPic = picList.iterator();
+								// System.out.println("!!!");
+								// while(iPic.hasNext()) {
+								// Image pic = iPic.next();
+
 							}
 							break;
 						case 1:
@@ -342,6 +361,11 @@ class FrameLaunch {
 							if (cm.getX() > et.getX() && cm.getX() < et.getX() + 65 && cm.getY() > et.getY()
 									&& cm.getY() < et.getY() + 45) {
 								et.isAlive = false;
+								for (int num = 0; num < picList.size(); num++) {
+									Image pic = (Image) picList.get(num);
+									System.out.println(cm.getX());
+									g.drawImage(pic, et.getX(), et.getY() - 10, 40, 40, this);
+								}
 								cm.setAliveFlag();
 							}
 						}
@@ -367,33 +391,33 @@ class FrameLaunch {
 				g.setColor(new Color(245, 245, 245));
 			}
 			switch (direation) {
-			case 0:// œÚ…œ.
+			case 0:// Âêë‰∏ä.
 				g.fill3DRect(x, y, 10, 60, false);
 				g.fill3DRect(x + 30, y, 10, 60, false);
 				g.fill3DRect(x + 5, y + 10, 30, 40, false);
 				g.fillOval(x + 10, y + 20, 20, 20);
 				g.fillRect(x + 20, y - 5, 2, 35);
 				break;
-			case 1:// œÚ”“.
+			case 1:// ÂêëÂè≥.
 				g.fill3DRect(x, y, 60, 10, false);
-				// ª≠≥ˆœ¬√Êµƒæÿ–Œ
+				// ÁîªÂá∫‰∏ãÈù¢ÁöÑÁü©ÂΩ¢
 				g.fill3DRect(x, y + 30, 60, 10, false);
-				// ª≠≥ˆ÷–º‰µƒæÿ–Œ
+				// ÁîªÂá∫‰∏≠Èó¥ÁöÑÁü©ÂΩ¢
 				g.fill3DRect(x + 10, y + 5, 40, 30, false);
-				// ª≠≥ˆ‘≤–Œ
+				// ÁîªÂá∫ÂúÜÂΩ¢
 				g.fillOval(x + 15, y + 10, 20, 20);
-				// ª≠≈⁄π‹
+				// ÁîªÁÇÆÁÆ°
 				g.fillRect(x + 30, y + 19, 35, 2);
 				break;
 
-			case 2:// œÚœ¬.
+			case 2:// Âêë‰∏ã.
 				g.fill3DRect(x, y, 10, 60, false);
 				g.fill3DRect(x + 30, y, 10, 60, false);
 				g.fill3DRect(x + 5, y + 8, 30, 40, false);
 				g.fillOval(x + 10, y + 13, 20, 20);
 				g.fillRect(x + 20, y + 30, 2, 35);
 				break;
-			case 3:// œÚ◊Û.
+			case 3:// ÂêëÂ∑¶.
 				g.fill3DRect(x, y, 60, 10, false);
 				g.fill3DRect(x, y + 30, 60, 10, false);
 				g.fill3DRect(x + 10, y + 5, 40, 30, false);
@@ -407,8 +431,7 @@ class FrameLaunch {
 			for (;;) {
 				try {
 					Thread.sleep(50);
-
-					// ø…“‘‘À––.
+					// ÂèØ‰ª•ËøêË°å.
 				} catch (InterruptedException aeInterrupted) {
 					aeInterrupted.printStackTrace();
 				}
@@ -429,7 +452,7 @@ class FrameLaunch {
 			new Thread(new enemyMove()).start();
 			new Thread(new enemyShot()).start();
 			new Thread(new Runnable() {
-				// ºÏ≤‚ «∑Ò≥…π¶.
+				// Ê£ÄÊµãÊòØÂê¶ÊàêÂäü.
 				public void run() {
 					while (true) {
 						try {
@@ -445,7 +468,7 @@ class FrameLaunch {
 							}
 						}
 						if (num == enemy.size()) {
-							JOptionPane.showMessageDialog(null, "≥…π¶£°", "Ã· æ", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "ÊàêÂäüÔºÅ", "ÊèêÁ§∫", JOptionPane.ERROR_MESSAGE);
 							System.exit(0);
 						}
 					}
@@ -739,16 +762,136 @@ class FrameLaunch {
 			public void setDir(int dir) {
 				this.dir = dir;
 			}
+
+			public boolean setIsTouch(int x, int y, int dir) {
+				switch (dir) {
+				case 0:
+					// ÊàëÁöÑÂù¶ÂÖãÂêë‰∏ä
+					// ÂèñÂá∫ÊâÄÊúâÁöÑÊïå‰∫∫Âù¶ÂÖã
+					for (int i = 0; i < enemy.size(); i++) {
+						// ÂèñÂá∫Á¨¨‰∏Ä‰∏™Âù¶ÂÖã
+						enemyTank et = enemy.get(i);
+						// Â¶ÇÊûú‰∏çÊòØËá™Â∑±
+						if (et != this) {
+							// Â¶ÇÊûúÊïå‰∫∫ÁöÑÊñπÂêëÊòØÂêë‰∏ãÊàñËÄÖÂêë‰∏ä
+							if (et.dir == 0 || et.dir == 1) {
+								if (x >= et.x && x <= et.x + 40 && y >= et.y && y <= et.y + 60) {
+									return true;
+								}
+								if (x + 40 >= et.x && x + 40 <= et.x + 40 && y >= et.y && y <= et.y + 60) {
+									return true;
+								}
+							}
+							if (et.dir == 3 || et.dir == 2) {
+								if (x >= et.x && x <= et.x + 60 && y >= et.y && y <= et.y + 40) {
+									return true;
+								}
+								if (x + 40 >= et.x && x + 40 <= et.x + 60 && y >= et.y && y <= et.y + 40) {
+									return true;
+								}
+							}
+						}
+					}
+					break;
+				case 1:
+					// ÊàëÁöÑÂù¶ÂÖãÂêë‰∏ã
+					// ÂèñÂá∫ÊâÄÊúâÁöÑÊïå‰∫∫Âù¶ÂÖã
+					for (int i = 0; i < enemy.size(); i++) {
+						// ÂèñÂá∫Á¨¨‰∏Ä‰∏™Âù¶ÂÖã
+						enemyTank et = enemy.get(i);
+						// Â¶ÇÊûú‰∏çÊòØËá™Â∑±
+						if (et != this) {
+							// Â¶ÇÊûúÊïå‰∫∫ÁöÑÊñπÂêëÊòØÂêë‰∏ãÊàñËÄÖÂêë‰∏ä
+							if (et.dir == 0 || et.dir == 1) {
+								if (x >= et.x && x <= et.x + 40 && y + 60 >= et.y && y + 60 <= et.y + 60) {
+									return true;
+								}
+								if (x + 40 >= et.x && x + 40 <= et.x + 40 && y + 60 >= et.y && y + 60 <= et.y + 60) {
+									return true;
+								}
+							}
+							if (et.dir == 3 || et.dir == 2) {
+								if (x >= et.x && x <= et.x + 60 && y + 60 >= et.y && y + 60 <= et.y + 40) {
+									return true;
+								}
+								if (x + 40 >= et.x && x + 40 <= et.x + 60 && y + 60 >= et.y && y + 60 <= et.y + 40) {
+									return true;
+								}
+							}
+						}
+					}
+
+					break;
+				case 2:
+					// ÊàëÁöÑÂù¶ÂÖãÂêëÂ∑¶
+					// ÂèñÂá∫ÊâÄÊúâÁöÑÊïå‰∫∫Âù¶ÂÖã
+					for (int i = 0; i < enemy.size(); i++) {
+						// ÂèñÂá∫Á¨¨‰∏Ä‰∏™Âù¶ÂÖã
+						enemyTank et = enemy.get(i);
+						// Â¶ÇÊûú‰∏çÊòØËá™Â∑±
+						if (et != this) {
+							// Â¶ÇÊûúÊïå‰∫∫ÁöÑÊñπÂêëÊòØÂêë‰∏ãÊàñËÄÖÂêë‰∏ä
+							if (et.dir == 0 || et.dir == 1) {
+								if (x >= et.x && x <= et.x + 40 && y >= et.y && y <= et.y + 60) {
+									return true;
+								}
+								if (x >= et.x && x <= et.x + 40 && y + 40 >= et.y && y + 40 <= et.y + 60) {
+									return true;
+								}
+							}
+							if (et.dir == 3 || et.dir == 2) {
+								if (x >= et.x && x <= et.x + 60 && y >= et.y && y <= et.y + 40) {
+									return true;
+								}
+								if (x >= et.x && x <= et.x + 60 && y + 40 >= et.y && y + 40 <= et.y + 40) {
+									return true;
+								}
+							}
+						}
+					}
+
+					break;
+				case 3:
+					// Âù¶ÂÖãÂêëÂè≥
+					for (int i = 0; i < enemy.size(); i++) {
+						// ÂèñÂá∫Á¨¨‰∏Ä‰∏™Âù¶ÂÖã
+						enemyTank et = enemy.get(i);
+						// Â¶ÇÊûú‰∏çÊòØËá™Â∑±
+						if (et != this) {
+							// Â¶ÇÊûúÊïå‰∫∫ÁöÑÊñπÂêëÊòØÂêë‰∏ãÊàñËÄÖÂêë‰∏ä
+							if (et.dir == 0 || et.dir == 1) {
+								if (x + 60 >= et.x && x + 60 <= et.x + 40 && y >= et.y && y <= et.y + 60) {
+									return true;
+								}
+								if (x + 60 >= et.x && x + 60 <= et.x + 40 && y + 40 >= et.y && y + 40 <= et.y + 60) {
+									return true;
+								}
+							}
+							if (et.dir == 2 || et.dir == 3) {
+								if (x + 60 >= et.x && x + 60 <= et.x + 60 && y >= et.y && y <= et.y + 40) {
+									return true;
+								}
+								if (x + 60 >= et.x && x + 60 <= et.x + 60 && y + 40 >= et.y && y + 40 <= et.y + 40) {
+									return true;
+								}
+							}
+						}
+					}
+					break;
+				default:
+				}
+				return false;
+			}
 		}
 
 		class cleanFrame implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				if (startFlag == true) {
 					removeTitle();
-					// «Â¿ÌΩÁ√Ê.
+					// Ê∏ÖÁêÜÁïåÈù¢.
 					keyStart = true;
 					cleanTitle = true;
-					// ø…“‘‘À––.
+					// ÂèØ‰ª•ËøêË°å.
 					gameLaunch();
 				}
 			}
@@ -772,5 +915,4 @@ class FrameLaunch {
 			}
 		}
 	}
-
 }
